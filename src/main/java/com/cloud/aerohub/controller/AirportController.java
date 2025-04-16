@@ -2,6 +2,7 @@ package com.cloud.aerohub.controller;
 
 import com.cloud.aerohub.dto.AirportDto;
 import com.cloud.aerohub.service.AirportService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/airports")
+@Tag(name = "Airport Api", description = "Airport CRUD operations with pagination and sorting")
 public class AirportController {
 
     private final AirportService airportService;
