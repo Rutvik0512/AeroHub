@@ -3,6 +3,7 @@ package com.cloud.aerohub.controller;
 import com.cloud.aerohub.dto.AirportDto;
 import com.cloud.aerohub.service.AirportService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +26,15 @@ public class AirportController {
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(required = false) String sortField,
-            @RequestParam(required = false) String sortDirection) {
-        return ResponseEntity.ok(airportService.getAirportsByPaginationSort(pageSize, pageNumber, sortField, sortDirection ));
+            @RequestParam(required = false) String sortDirection,
+            @RequestParam(required = false) String search) {
+        return ResponseEntity.ok(airportService.getAirportsByPaginationSort(pageSize, pageNumber, sortField, sortDirection, search));
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<AirportDto> addAirport(@RequestBody AirportDto airportDto) {
+        AirportDto newlyCreatedDto = airportService.addAirport(airportDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newlyCreatedDto);
     }
 
     public AirportController(AirportService airportService) {

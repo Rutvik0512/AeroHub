@@ -1,7 +1,7 @@
 package com.cloud.aerohub.dto;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AirportDto {
-    @JsonProperty(value = "_key")
-    @JsonAlias("id")
-    private String id;
     private String icao;
     private String iata;
     private String name;
@@ -23,5 +22,4 @@ public class AirportDto {
     private Double lat;
     private Double lon;
     private String timezone;
-
 }

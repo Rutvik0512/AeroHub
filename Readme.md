@@ -1,14 +1,12 @@
 ## Todo
-1. Swagger Implementation
-2. Database Storage Optimization
-3. Additionally, add a feature to filter the airports by name using a “contains” filter.
-4. Caching mechanism
-5. Create an endpoint to add new airport with name, city, state, etc during runtime.
-6. Dockerize the application
-7. Add more unit tests
-8. Add more error handling
-9. Add more logging and logback.xml
-10. Integrate with kibana-UI
-11. If time permits:
-    1. Role based authentication
-    2. Devops integration
+1. Database Storage Optimization
+2. Caching mechanism
+3. Create an endpoint to add new airport with name, city, state, etc during runtime.
+4. Dockerize the application
+5. Add more unit tests
+6. Add more error handling
+7. Add more logging and logback.xml
+8. Integrate with kibana-UI
+9. If time permits:
+   1. Role based authentication
+   2. Devops integration

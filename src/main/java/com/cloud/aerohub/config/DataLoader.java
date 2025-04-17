@@ -44,7 +44,6 @@ public class DataLoader implements CommandLineRunner {
             for (CSVRecord record : records) {
                 try{
                     Airport airport = Airport.builder()
-                            .id(record.get(0))
                             .icao(record.get(1))
                             .iata(record.get(2))
                             .name(record.get(3))
