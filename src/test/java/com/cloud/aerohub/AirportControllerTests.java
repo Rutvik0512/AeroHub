@@ -3,6 +3,7 @@ package com.cloud.aerohub;
 import com.cloud.aerohub.dto.AirportDto;
 import com.cloud.aerohub.entity.Airport;
 import com.cloud.aerohub.repository.AirportRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,7 +73,8 @@ public class AirportControllerTests {
                         .param("pageNumber", "0"))
                         .andReturn().getResponse();
 
-        List<AirportDto> airportDtos = objectMapper.readValue(response.getContentAsString(), new com.fasterxml.jackson.core.type.TypeReference<List<AirportDto>>(){});
+        JsonNode root   = objectMapper.readTree(response.getContentAsString());
+        List<AirportDto> airportDtos = objectMapper.convertValue(root.get("content"),new com.fasterxml.jackson.core.type.TypeReference<List<AirportDto>>(){});
 
         assertThat(response.getStatus(), is(200));
         assertThat(airportDtos.size(),is(3));
@@ -90,7 +92,8 @@ public class AirportControllerTests {
                         .param("sortOrder", "asc"))
                         .andReturn().getResponse();
 
-        List<AirportDto> airportDtos = objectMapper.readValue(response.getContentAsString(),new com.fasterxml.jackson.core.type.TypeReference<List<AirportDto>>(){});
+        JsonNode root   = objectMapper.readTree(response.getContentAsString());
+        List<AirportDto> airportDtos = objectMapper.convertValue(root.get("content"),new com.fasterxml.jackson.core.type.TypeReference<List<AirportDto>>(){});
 
         assertThat(response.getStatus(), is(200));
         assertThat(airportDtos.size(),is(4));

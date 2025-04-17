@@ -5,6 +5,8 @@ import com.cloud.aerohub.entity.Airport;
 import com.cloud.aerohub.repository.AirportRepository;
 import com.cloud.aerohub.service.AirportService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +29,13 @@ public class AirportServiceImpl implements AirportService {
                 .toList();
     }
 
+    @Cacheable(
+            cacheNames = "airportsFirstPage",
+            keyGenerator = "airportKeyGen",
+            condition = "#pageNumber == 0"
+    )
     @Override
-    public List<AirportDto> getAirportsByPaginationSort(int pageSize, int pageNumber, String sortField, String sortDirection, String search) {
+    public Page<AirportDto> getAirportsByPaginationSort(int pageSize, int pageNumber, String sortField, String sortDirection, String search) {
         Pageable pageable = (sortField != null && !sortField.isBlank())
                 ? PageRequest.of(pageNumber, pageSize,
                 Sort.by("desc".equalsIgnoreCase(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC, sortField))
@@ -38,11 +45,7 @@ public class AirportServiceImpl implements AirportService {
                                 ? airportRepository.findByNameContainingIgnoreCase(search.trim(), pageable)
                                 : airportRepository.findAll(pageable);
 
-        return airports
-                .getContent()
-                .stream()
-                .map(this::getEntityToDto)
-                .toList();
+        return airports.map(this::getEntityToDto);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.cloud.aerohub.controller;
 import com.cloud.aerohub.dto.AirportDto;
 import com.cloud.aerohub.service.AirportService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class AirportController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<AirportDto>> getAirportsByPagination(
+    public ResponseEntity<Page<AirportDto>> getAirportsByPagination(
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(required = false) String sortField,

@@ -25,6 +25,12 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
+        if (isInitialized()){
+            logger.info("Airports data set already initialized");
+            return;
+        }
+
         InputStream inputStream = getResourceAsStream();
         if (inputStream == null) {
             logger.error("Unable to load airports.csv file");
@@ -66,6 +72,10 @@ public class DataLoader implements CommandLineRunner {
             logger.info("Total airports loaded: {}", airportRepository.count());
         }
 
+    }
+
+    public boolean isInitialized() {
+        return airportRepository.count() > 0;
     }
 
     public InputStream getResourceAsStream() {
