@@ -13,3 +13,5 @@ applications:
     random-route: false
     services:
       - postgres
+      - redis-cache
+      - application-logging

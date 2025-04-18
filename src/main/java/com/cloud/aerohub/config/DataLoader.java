@@ -3,6 +3,8 @@ package com.cloud.aerohub.config;
 import com.cloud.aerohub.entity.Airport;
 import com.cloud.aerohub.exception.ResourceNotFound;
 import com.cloud.aerohub.repository.AirportRepository;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
@@ -14,26 +16,28 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-
+@Slf4j
 @Component
 public class DataLoader implements CommandLineRunner {
 
     private static final String csvPath = "/data/airports.csv";
-    private static final Logger logger = LoggerFactory.getLogger(DataLoader.class);
 
     private final AirportRepository airportRepository;
 
+    @Transactional
     @Override
     public void run(String... args) throws Exception {
 
         if (isInitialized()){
-            logger.info("Airports data set already initialized");
+            log.info("Airports data set already initialized");
             return;
         }
 
+        log.info("Initializing airports data set");
+
         InputStream inputStream = getResourceAsStream();
         if (inputStream == null) {
-            logger.error("Unable to load airports.csv file");
+            log.error("Unable to load airports.csv file");
             throw new ResourceNotFound("File not found: " + csvPath);
         }
 
@@ -45,7 +49,7 @@ public class DataLoader implements CommandLineRunner {
                     .get()
                     .parse(reader);
 
-            logger.info("Loading airports data set");
+            log.info("Loading airports data set");
 
             for (CSVRecord record : records) {
                 try{
@@ -61,15 +65,14 @@ public class DataLoader implements CommandLineRunner {
                             .lon(Double.parseDouble(record.get(9)))
                             .timezone(record.get(10))
                             .build();
-                    logger.debug("Saving airport: {}", airport);
+                    log.trace("Saving airport: {}", airport);
                     airportRepository.save(airport);
                 }catch (NumberFormatException e){
-                    logger.warn("Invalid elevation value: {}. Skipping record.", record.get(7));
+                    log.warn("Invalid elevation value: {}. Skipping record.", record.get(7));
                 }
 
             }
-
-            logger.info("Total airports loaded: {}", airportRepository.count());
+            log.info("Total airports loaded: {}", airportRepository.count());
         }
 
     }
