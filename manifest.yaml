@@ -1,0 +1,17 @@
+applications:
+  - name: aero-hub
+    path: target/aerohub-0.0.2-SNAPSHOT.jar
+    memory: 2048M
+    cpu: 4
+    instances: 1
+    buildpacks:
+      - java_buildpack
+    env:
+      SPRING_PROFILES_ACTIVE: prod
+      JAVA_OPTS: "-Djava.security.egd=file:/dev/./urandom"
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 17.+ } }'
+    random-route: false
+    services:
+      - postgres
+      - redis-cache
+      - application-logging

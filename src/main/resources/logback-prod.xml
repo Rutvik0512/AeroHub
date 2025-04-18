@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Import the SAP CF Logging support defaults -->
+    <include resource="com/sap/hcp/cf/logback/cf-logback-defaults.xml"/>
+
+    <!-- Console Appender using the SAP CF JSON layout -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="com.sap.hcp.cf.logback.encoder.JsonEncoder"/>
+    </appender>
+
+    <!-- File Appender for local development (optional) -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR:-${user.home}/logs}/aerohub.log</file>
+        <encoder class="com.sap.hcp.cf.logback.encoder.JsonEncoder"/>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${LOG_DIR:-${user.home}/logs}/aerohub.%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>10</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <!-- Application loggers -->
+    <logger name="com.cloud.aerohub" level="DEBUG"/>
+
+    <!-- Cache-specific loggers -->
+    <logger name="org.springframework.cache" level="DEBUG"/>
+    <logger name="org.springframework.data.redis" level="DEBUG"/>
+
+    <!-- Framework loggers -->
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.hibernate" level="INFO"/>
+
+    <!-- Root logger configuration -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

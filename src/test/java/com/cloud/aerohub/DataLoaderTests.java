@@ -24,20 +24,22 @@ public class DataLoaderTests {
     @InjectMocks
     private DataLoader dataLoader;
 
-    @Test
-    void testRun_SuccessfullyLoadsData() throws Exception {
+   @Test
+   void testRun_SuccessfullyLoadsData() throws Exception {
 
-        InputStream mockInputStream = new ByteArrayInputStream((
-                "id,icao,iata,name,city,state,country,elevation,lat,lon,tz\n" +
-                        "KATL,KATL,Hartsfield-Jackson Atlanta International,Atlanta,GA,USA,1026,33.6367,-84.4281,America/New_York"
-        ).getBytes());
+       InputStream mockInputStream = new ByteArrayInputStream((
+               "id,icao,iata,name,city,state,country,elevation,lat,lon,tz\n" +
+                       "KATL,KATL,,Hartsfield-Jackson Atlanta International,Atlanta,GA,USA,1026,33.6367,-84.4281,America/New_York"
+       ).getBytes());
 
-        DataLoader spyDataLoader = Mockito.spy(dataLoader);
-        Mockito.doReturn(mockInputStream).when(spyDataLoader).getResourceAsStream();
+       DataLoader spyDataLoader = Mockito.spy(dataLoader);
+       Mockito.doReturn(mockInputStream).when(spyDataLoader).getResourceAsStream();
+       Mockito.doReturn(false).when(spyDataLoader).isInitialized();
 
-        spyDataLoader.run();
-        Mockito.verify(airportRepository, Mockito.times(1)).save(Mockito.any(Airport.class));
-    }
+       spyDataLoader.run();
+
+       Mockito.verify(airportRepository, Mockito.times(1)).save(Mockito.any(Airport.class));
+   }
 
     @Test
     void testRun_FileNotFound_ThrowsException() {
