@@ -50,6 +50,22 @@ public class AirportController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newlyCreatedDto);
     }
 
+    @GetMapping("/states")
+    public ResponseEntity<List<String>> getStates() {
+        log.info("Request to get all states");
+        List<String> states = airportService.getStates();
+        log.info("Returning {} states", states.size());
+        return ResponseEntity.ok(states);
+    }
+
+    @GetMapping("/timezones")
+    public ResponseEntity<List<String>> getTimezones() {
+        log.info("Request to get all timezones");
+        List<String> timezones = airportService.getTimezones();
+        log.info("Returning {} timezones", timezones.size());
+        return ResponseEntity.ok(timezones);
+    }
+
     public AirportController(AirportService airportService) {
         this.airportService = airportService;
     }

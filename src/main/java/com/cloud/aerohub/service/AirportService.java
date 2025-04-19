@@ -10,4 +10,6 @@ public interface AirportService {
     List<AirportDto> getAllAirports();
     AirportPage getAirportsByPaginationSort(int pageSize, int pageNumber, String sortField, String sortDirection, String search);
     AirportDto addAirport(AirportDto airportDto);
+    List<String> getStates();
+    List<String> getTimezones();
 }

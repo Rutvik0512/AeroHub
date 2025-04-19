@@ -8,6 +8,7 @@ import com.cloud.aerohub.service.AirportService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -70,6 +71,7 @@ public class AirportServiceImpl implements AirportService {
                 .build();
     }
 
+    @CacheEvict(cacheNames = {"states", "timezones"}, allEntries = true)
     @Override
     @Transactional
     public AirportDto addAirport(AirportDto airportDto) {
@@ -79,6 +81,24 @@ public class AirportServiceImpl implements AirportService {
         Airport savedAirport = airportRepository.save(airport);
         log.info("Successfully saved airport with ICAO: {} to database", savedAirport.getIcao());
         return getEntityToDto(airport);
+    }
+
+    @Cacheable(cacheNames = "states")
+    @Override
+    public List<String> getStates() {
+        log.debug("Fetching all states from database");
+        List<String> states = airportRepository.findDistinctStateBy();
+        log.info("Retrieved {} states from database", states.size());
+        return states;
+    }
+
+    @Cacheable(cacheNames = "timezones")
+    @Override
+    public List<String> getTimezones() {
+        log.debug("Fetching all timezones from database");
+        List<String> timezones = airportRepository.findDistinctTimezoneBy();
+        log.info("Retrieved {} timezones from database", timezones.size());
+        return timezones;
     }
 
     public AirportDto getEntityToDto(Airport airport) {
@@ -95,5 +115,4 @@ public class AirportServiceImpl implements AirportService {
         this.airportRepository = airportRepository;
         this.objectMapper = objectMapper;
     }
-
 }
