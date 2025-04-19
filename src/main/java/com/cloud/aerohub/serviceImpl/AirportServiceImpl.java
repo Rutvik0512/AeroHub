@@ -71,6 +71,7 @@ public class AirportServiceImpl implements AirportService {
                 .build();
     }
 
+    @CacheEvict(cacheNames = {"states", "timezones"}, allEntries = true)
     @Override
     @Transactional
     public AirportDto addAirport(AirportDto airportDto) {
@@ -82,7 +83,6 @@ public class AirportServiceImpl implements AirportService {
         return getEntityToDto(airport);
     }
 
-    @CacheEvict(cacheNames = {"states", "timezones"}, allEntries = true)
     @Cacheable(cacheNames = "states")
     @Override
     public List<String> getStates() {

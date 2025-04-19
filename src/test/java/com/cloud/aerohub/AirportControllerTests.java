@@ -3,6 +3,7 @@ package com.cloud.aerohub;
 import com.cloud.aerohub.dto.AirportDto;
 import com.cloud.aerohub.entity.Airport;
 import com.cloud.aerohub.repository.AirportRepository;
+import com.cloud.aerohub.service.AirportService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -102,6 +104,61 @@ public class AirportControllerTests {
             assert(airportDtos.get(i).getElevation() < airportDtos.get(i+1).getElevation());
         }
 
+    }
+
+    @Test
+    public void addAirport_validAirport_returnsCreatedAirport() throws Exception {
+        AirportDto airportDto = objectMapper.convertValue(createAirports().get(0), AirportDto.class);
+
+        MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/airports/add")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(airportDto)))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus(), is(201));
+        assertThat(airportRepository.count(), is(1L));
+    }
+
+    @Test
+    public void getStates_noAirports_returnsEmptyList() throws Exception {
+        this.mockMvc.perform(get("/api/v1/airports/states"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("[]")));
+    }
+
+    @Test
+    public void getStates_airports_returnsStatesList() throws Exception {
+        List<Airport> airports = createAirports();
+        airportRepository.saveAll(airports);
+
+        MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/airports/states"))
+                .andReturn().getResponse();
+
+        List<String> states = objectMapper.readValue(response.getContentAsString(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>(){});
+
+        assertThat(response.getStatus(), is(200));
+        assertThat(states.size(), is(6));
+    }
+
+    @Test
+    public void getTimezones_noAirports_returnsEmptyList() throws Exception {
+        this.mockMvc.perform(get("/api/v1/airports/timezones"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("[]")));
+    }
+
+    @Test
+    public void getTimezones_airports_returnsTimezonesList() throws Exception {
+        List<Airport> airports = createAirports();
+        airportRepository.saveAll(airports);
+
+        MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/airports/timezones"))
+                .andReturn().getResponse();
+
+        List<String> timezones = objectMapper.readValue(response.getContentAsString(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>(){});
+
+        assertThat(response.getStatus(), is(200));
+        assertThat(timezones.size(), is(5));
     }
 
     private List<Airport> createAirports() {
