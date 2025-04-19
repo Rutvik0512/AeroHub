@@ -3,6 +3,8 @@
 This project is a web service that provides airport data from JSON or CSV files. The service includes features like 
 sorting, filtering, and adding new airports at runtime. It also includes a UI to display the data in a table format.
 
+- UI Deployment: [aero-hub-ui](https://flight-details.cfapps.eu12.hana.ondemand.com)
+  - Note:  The UI has 3d elements it requires high speed internet connection to load the 3d elements. So please reload the page if you see a blank screen.
 
 ### Prerequisites
 - Java 17 or higher
@@ -19,6 +21,7 @@ sorting, filtering, and adding new airports at runtime. It also includes a UI to
    2. Postgres DB for data persistence and support scalability
    3. Redis Cache for caching airports 
 5. Logback for logging
+6. UI Repository : [GUI-REPO](https://github.com/Rutvik0512/Aerohub-frontEnd.git)
 
 ### Local Setup
 1. Clone the repository
@@ -39,8 +42,6 @@ sorting, filtering, and adding new airports at runtime. It also includes a UI to
 
 ## Todo
 1. Dockerize the application
-2. Add more unit tests
-3. Add more error handling
-5. If time permits:
+2. If time permits:
    1. Role based authentication
    2. Devops integration

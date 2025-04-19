@@ -1,7 +1,7 @@
 applications:
   - name: aero-hub
     path: target/aerohub-0.0.2-SNAPSHOT.jar
-    memory: 4G
+    memory: 3G
     cpu: 4
     instances: 1
     buildpacks:
