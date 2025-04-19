@@ -1,8 +1,9 @@
 package com.cloud.aerohub.config;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.cloud.aerohub.dto.AirportPage;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import jakarta.annotation.PostConstruct;
@@ -15,8 +16,11 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @EnableCaching
 @Component
@@ -60,24 +64,31 @@ public class AppConfiguration {
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
+        ObjectMapper plainMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.activateDefaultTyping(
-                LaissezFaireSubTypeValidator.instance,
-                ObjectMapper.DefaultTyping.NON_FINAL,
-                JsonTypeInfo.As.PROPERTY
+        GenericJackson2JsonRedisSerializer generic =
+                new GenericJackson2JsonRedisSerializer(plainMapper);
+
+        Jackson2JsonRedisSerializer<AirportPage> airportPageSer =
+                new Jackson2JsonRedisSerializer<>(AirportPage.class);
+        airportPageSer.setObjectMapper(plainMapper);
+
+        RedisCacheConfiguration defaultCfg = RedisCacheConfiguration.defaultCacheConfig()
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(generic));
+
+        Map<String, RedisCacheConfiguration> perCache = Map.of(
+                "states",     defaultCfg,
+                "timezones",  defaultCfg,
+                "airportsFirstPage",
+                defaultCfg.serializeValuesWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(airportPageSer)) // typed
         );
 
-        GenericJackson2JsonRedisSerializer jsonSerializer =
-                new GenericJackson2JsonRedisSerializer(mapper);
-
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeValuesWith(
-                        RedisSerializationContext.SerializationPair.fromSerializer(jsonSerializer)
-                );
-
         return RedisCacheManager.builder(factory)
-                .cacheDefaults(config)
+                .cacheDefaults(defaultCfg)
+                .withInitialCacheConfigurations(perCache)
                 .build();
     }
 }
